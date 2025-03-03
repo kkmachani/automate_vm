@@ -48,5 +48,10 @@ jobs:
            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
            --scripts "sudo apt update -y && (dpkg -l | grep -qw nginx && echo 'Nginx is already installed' || (sudo apt install -y nginx && sudo systemctl enable nginx && sudo systemctl start nginx && echo 'Nginx installed'))"
 
-
-  
+        - name: Checking Disk-Space of VM
+          run: |
+           az vm run-command invoke \
+           --command-id RunShellScript \
+           --name ${{ secrets.AZURE_VM_NAME}} \
+           --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+           --scripts "df -h"
