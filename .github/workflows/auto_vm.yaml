@@ -22,7 +22,7 @@ jobs:
 
         - name: Checking Resources in Resource Group
           run: |
-           az resource list -g ${{ vars.AZURE_RESOURCE_GROUP }} --output table
+           az resource list --resource-group -g  ${{ vars.AZURE_RESOURCE_GROUP }} --output table
   
   checking-azure-vm:
       name: checking VM
