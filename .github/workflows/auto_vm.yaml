@@ -21,7 +21,8 @@ jobs:
           run: az account show
 
         - name: Checking Resources in Resource Group
-          run: az resource list --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --output table
+          run: |
+           az resource list --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --output table
   
   checking-azure-vm:
       name: checking VM
