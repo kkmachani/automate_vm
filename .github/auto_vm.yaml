@@ -38,7 +38,7 @@ jobs:
 
         # - name: Checking the Status of the VM
         #   run: |
-        #     if | az vm 
+        #     if | 
 
 
   
