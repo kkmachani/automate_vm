@@ -33,10 +33,13 @@ jobs:
           run: |
            az vm show --name ${{ secrets.AZURE_VM_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --query "id" --output tsv && echo "VM exists" || echo "VM does not exist"
 
+        - name: checking the Power State of the VM
+          run: |
+           az vm show --name ${{ secrets.AZURE_VM_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} |
+              --query "powerState" --output tsv |
+              | grep "stopped" && az vm start --name ${{ secrets.AZURE_VM_NAME }} |
+              --resource-group ${{ secrets>AZURE_RESOURCE_GROUP }} && echo "VM started" || echo "VM is already running"
 
-        # - name: Checking the Status of the VM
-        #   run: |
-        #     if | 
 
 
   
