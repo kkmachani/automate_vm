@@ -1,11 +1,11 @@
 name: Automate VM and Check the Disk Info
 
 on:
-
- schedule:
+  schedule:
     - cron: '0 14 * * *'
- branches: 
-       - main
+  push:
+    branches:
+      - main
 
 jobs:
   azure-login:
