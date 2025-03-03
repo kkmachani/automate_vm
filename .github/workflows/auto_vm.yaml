@@ -31,11 +31,8 @@ jobs:
       steps:
         - name: Checking the VM
           run: |
-            if ! az vm show --name ${{ secrets.AZURE_VM_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --query "id" --output tsv &>/dev/null; then
-              echo "VM exists."
-            else
-              echo "VM does not exist."
-            fi
+           az vm show --name ${{ secrets.AZURE_VM_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --query "id" --output tsv && echo "VM exists" || echo "VM does not exist"
+
 
         # - name: Checking the Status of the VM
         #   run: |
