@@ -62,6 +62,4 @@ jobs:
             --command-id RunShellScript \
             --name ${{ secrets.AZURE_VM_NAME }} \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --scripts "ps -eo pid,user,%cpu,%mem,cmd --sort=-%cpu | head -20"
-
-
+            --scripts "ps -eo pid,user,%cpu,%mem,cmd --sort=-%cpu | head -20 |column -t"
