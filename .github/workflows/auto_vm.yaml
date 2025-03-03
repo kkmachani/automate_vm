@@ -56,3 +56,12 @@ jobs:
            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
            --scripts "df -h --output=source,size,used,avail,pcent,target | column -t"
 
+        - name: Checking the Current Running Processes in the VM
+          run: |
+            az vm run-command invoke \
+            --command-id RunShellScript \
+            --name ${{ secrets.AZURE_VM_NAME }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --scripts "ps -eo pid,user,%cpu,%mem,cmd --sort=-%cpu | head -20"
+
+
