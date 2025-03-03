@@ -40,7 +40,7 @@ jobs:
               | grep "stopped" && az vm start --name ${{ secrets.AZURE_VM_NAME }} \
               --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} && echo "VM started" || echo "VM is already running"
 
-        - name: Checking the Nginx Service in VM
+        - name: Checking the Nginx in VM
           run: |
            az vm run-command invoke \
            --command-id RunShellScript \
