@@ -81,7 +81,10 @@ jobs:
            cat vm_disk_info.txt >> vm_report.txt
            echo -e "\n### Running Processes ###\n" >> vm_report.txt
            cat vm_process_info.txt >> vm_report.txt
-        
+
+        - name: Set Report Date
+          run: echo "REPORT_DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
+
         - name: Send an email with VM report
           uses: dawidd6/action-send-mail@v4
           with:
@@ -89,13 +92,12 @@ jobs:
            server_port: 587
            username: ${{ secrets.EMAIL_USERNAME }}
            password: ${{ secrets.EMAIL_PASSWORD }}
-           subject: "Azure VM System Report - $(date +"%Y-%m-%d")"
-           body: "Please find the attached system report for $(date +"%Y-%m-%d %H:%M:%S")."
+           subject: "Azure VM System Report - ${{ env.REPORT_DATE }}"
+           body: "Please find the attached system report for ${{ env.REPORT_DATE }}."
            to: "kkmachani@gmail.com"
            from: "GitHub Actions <${{ secrets.EMAIL_USERNAME }}>"
            attachments: "vm_report.txt"
 
-        
         - name: Stopping the VM
           run: |
            echo "Holding for 5 seconds before stopping the VM..."
