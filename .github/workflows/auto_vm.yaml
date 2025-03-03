@@ -1,10 +1,10 @@
 name: Automate VM and Check the Disk Info
 
 on:
- push:
-#  schedule:
-#     - cron: '0 14 * * *'
-   branches: 
+
+ schedule:
+    - cron: '0 14 * * *'
+ branches: 
        - main
 
 jobs:
@@ -17,6 +17,9 @@ jobs:
 
         - name: Login to Azure
           run: az login --use-device-code
+
+        - name: Set Azure Subscription
+          run: az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
         - name: Check the Azure Account
           run: az account show
@@ -36,11 +39,14 @@ jobs:
 
         - name: checking the Power-State of the VM
           run: |
-           az vm show --name ${{ secrets.AZURE_VM_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --query "powerState" --output tsv \
-              | grep "stopped" && az vm start --name ${{ secrets.AZURE_VM_NAME }} \
-              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} && echo "VM started" || echo "VM is already running"
-
+           STATUS=$(az vm get-instance-view --name ${{ secrets.AZURE_VM_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --query "instanceView.statuses[?starts_with(code, 'PowerState/')].code" -o tsv)
+           if [[ "$STATUS" == "PowerState/deallocated" || "$STATUS" == "PowerState/stopped" ]]; then
+             echo "Starting VM..."
+             az vm start --name ${{ secrets.AZURE_VM_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }}
+           else
+             echo "VM is already running."
+           fi
+        
         - name: Checking the Nginx in VM
           run: |
            az vm run-command invoke \
@@ -75,19 +81,20 @@ jobs:
            cat vm_disk_info.txt >> vm_report.txt
            echo -e "\n### Running Processes ###\n" >> vm_report.txt
            cat vm_process_info.txt >> vm_report.txt
-
+        
         - name: Send an email with VM report
           uses: dawidd6/action-send-mail@v4
           with:
-            server_address: smtp.gmail.com
-            server_port: 587
-            username: ${{ secrets.EMAIL_USERNAME }}
-            password: ${{ secrets.EMAIL_PASSWORD }}
-            subject: "Azure VM System Report - $(date +"%Y-%m-%d")"
-            body: "Please find the attached system report for $(date +"%Y-%m-%d %H:%M:%S")."
-            to: kkmachani@gmail.com
-            from: "GitHub Actions <${{ secrets.EMAIL_USERNAME }}>"
-            attachment: vm_report.txt
+           server_address: smtp.gmail.com
+           server_port: 587
+           username: ${{ secrets.EMAIL_USERNAME }}
+           password: ${{ secrets.EMAIL_PASSWORD }}
+           subject: "Azure VM System Report - $(date +"%Y-%m-%d")"
+           body: "Please find the attached system report for $(date +"%Y-%m-%d %H:%M:%S")."
+           to: "kkmachani@gmail.com"
+           from: "GitHub Actions <${{ secrets.EMAIL_USERNAME }}>"
+           attachments: "vm_report.txt"
+
         
         - name: Stopping the VM
           run: |
