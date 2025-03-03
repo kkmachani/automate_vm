@@ -1,8 +1,9 @@
 name: Automate VM and Check the Disk Info
 
-on:   
- 
+on:
  push:
+#  schedule:
+#     - cron: '0 14 * * *'
    branches: 
        - main
 
@@ -51,10 +52,11 @@ jobs:
         - name: Checking Disk-Space of VM
           run: |
            az vm run-command invoke \
-           --command-id RunShellScript \
-           --name ${{ secrets.AZURE_VM_NAME }} \
-           --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-           --scripts "df -h --output=source,size,used,avail,pcent,target | column -t"
+            --command-id RunShellScript \
+            --name ${{ secrets.AZURE_VM_NAME }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --scripts "df -h --output=source,size,used,avail,pcent,target | column -t" \
+            --query "value[0].message" -o tsv > vm_disk_info.txt
 
         - name: Checking the Current Running Processes in the VM
           run: |
@@ -62,4 +64,34 @@ jobs:
             --command-id RunShellScript \
             --name ${{ secrets.AZURE_VM_NAME }} \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --scripts "ps -eo pid,user,%cpu,%mem,cmd --sort=-%cpu | head -20 |column -t"
+            --scripts "ps -eo pid,user,%cpu,%mem,command --sort=-%cpu | head -20 | column -t" \
+            --query "value[0].message" -o tsv > vm_process_info.txt
+
+        - name: Combining the Disk & Running Process Reports
+          run: |
+           REPORT_DATE=$(date +"%Y-%m-%d %H:%M:%S")
+           echo "Azure VM Report - $REPORT_DATE" > vm_report.txt
+           echo -e "\n### Disk Space Info ###\n" >> vm_report.txt
+           cat vm_disk_info.txt >> vm_report.txt
+           echo -e "\n### Running Processes ###\n" >> vm_report.txt
+           cat vm_process_info.txt >> vm_report.txt
+
+        - name: Send an email with VM report
+          uses: dawidd6/action-send-mail@v4
+          with:
+            server_address: smtp.gmail.com
+            server_port: 587
+            username: ${{ secrets.EMAIL_USERNAME }}
+            password: ${{ secrets.EMAIL_PASSWORD }}
+            subject: "Azure VM System Report - $(date +"%Y-%m-%d")"
+            body: "Please find the attached system report for $(date +"%Y-%m-%d %H:%M:%S")."
+            to: kkmachani@gmail.com
+            from: "GitHub Actions <${{ secrets.EMAIL_USERNAME }}>"
+            attachment: vm_report.txt
+        
+        - name: Stopping the VM
+          run: |
+           echo "Holding for 5 seconds before stopping the VM..."
+           sleep 5
+           az vm stop --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AZURE_VM_NAME }} --no-wait
+
