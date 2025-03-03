@@ -1,0 +1,44 @@
+name: Automate VM and Check the Disk Info
+
+on:   
+ 
+ push:
+   branches: 
+       - main
+
+jobs:
+  azure-login:
+      name: Login to azure
+      runs-on: self-hosted
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@v4 
+
+        - name: Login to Azure
+          run: az login --use-device-code
+
+        - name: Check the Azure Account
+          run: az account show
+
+        - name: Checking Resources in Resource Group
+          run: az resource list --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --output table
+  
+  checking-azure-vm:
+      name: checking VM
+      runs-on: self-hosted
+      needs: [azure-login]
+      steps:
+        - name: Checking the VM
+          run: |
+            if ! az vm show --name ${{ vars.AZURE_VM_NAME }} --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} --query "id" --output tsv &>/dev/null; then
+              echo "VM exists."
+            else
+              echo "VM does not exist."
+            fi
+
+        # - name: Checking the Status of the VM
+        #   run: |
+        #     if | az vm 
+
+
+  
