@@ -38,7 +38,7 @@ jobs:
            az vm show --name ${{ secrets.AZURE_VM_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
               --query "powerState" --output tsv \
               | grep "stopped" && az vm start --name ${{ secrets.AZURE_VM_NAME }} \
-              --resource-group ${{ secrets>AZURE_RESOURCE_GROUP }} && echo "VM started" || echo "VM is already running"
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} && echo "VM started" || echo "VM is already running"
 
 
 
