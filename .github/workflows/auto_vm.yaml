@@ -18,8 +18,8 @@ jobs:
         - name: Login to Azure
           run: az login --use-device-code
 
-        - name: Set Azure Subscription
-          run: az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        # - name: Set Azure Subscription
+        #   run: az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
         - name: Check the Azure Account
           run: az account show
