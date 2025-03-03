@@ -52,6 +52,7 @@ jobs:
           run: |
            az vm run-command invoke \
            --command-id RunShellScript \
-           --name ${{ secrets.AZURE_VM_NAME}} \
+           --name ${{ secrets.AZURE_VM_NAME }} \
            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-           --scripts "df -h"
+           --scripts "df -h --output=source,size,used,avail,pcent,target | column -t"
+
