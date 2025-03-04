@@ -1,8 +1,8 @@
 name: Automate VM and Check the Disk Info
 
 on:
-  # schedule:
-  #   - cron: '0 14 * * *'
+  schedule:
+    - cron: '0 14 * * *'
   push:
     branches:
       - main
