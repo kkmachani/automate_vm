@@ -76,10 +76,6 @@ jobs:
         - name: Set Report Date with IST
           run: echo "REPORT_DATE=$(TZ="Asia/Kolkata" date +"%Y-%m-%d %H:%M:%S IST")" >> $GITHUB_ENV
 
-
-        - name: Debug the Report Date
-          run: echo "Current Report Date: ${{ env.REPORT_DATE }}"
-
         - name: Combining the Disk & Running Process Reports
           run: |
 
