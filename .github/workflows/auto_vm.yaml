@@ -66,12 +66,13 @@ jobs:
 
         - name: Checking the Current Running Processes in the VM
           run: |
-            az vm run-command invoke \
+           az vm run-command invoke \
             --command-id RunShellScript \
-            --name ${{ secrets.AZURE_VM_NAME }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --scripts "ps -eo pid,user,%cpu,%mem,command --sort=-%cpu | head -20 | column -t" \
+            --name <VM_NAME> \
+            --resource-group <RESOURCE_GROUP> \
+            --scripts "ps -eo pid,user,%cpu,%mem,command --sort=-%cpu | head -20" \
             --query "value[0].message" -o tsv > vm_process_info.txt
+
 
         - name: Combining the Disk & Running Process Reports
           run: |
