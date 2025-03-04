@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  azure-login:
+  checking-running-process-of-VM-&-sending-an-email:
       name: Login to azure
       runs-on: ubuntu-latest
       steps:
@@ -73,18 +73,17 @@ jobs:
             --scripts "ps -eo pid,user,%cpu,%mem,command --sort=-%cpu | head -20" \
             --query "value[0].message" -o tsv > vm_process_info.txt
 
+        - name: Set Report Date
+          run: echo "REPORT_DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
 
         - name: Combining the Disk & Running Process Reports
           run: |
-           REPORT_DATE=$(date +"%Y-%m-%d %H:%M:%S")
+
            echo "Azure VM Report - $REPORT_DATE" > vm_report.txt
            echo -e "\n### Disk Space Info ###\n" >> vm_report.txt
            cat vm_disk_info.txt >> vm_report.txt
            echo -e "\n### Running Processes ###\n" >> vm_report.txt
            cat vm_process_info.txt >> vm_report.txt
-
-        - name: Set Report Date
-          run: echo "REPORT_DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
 
         - name: Send an email with VM report
           uses: dawidd6/action-send-mail@v4
