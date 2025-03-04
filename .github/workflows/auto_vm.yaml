@@ -9,7 +9,7 @@ on:
 
 jobs:
   checking-running-processes-of-VM:
-      name: Login to azure
+      name: checking-running-processes-of-VM
       runs-on: ubuntu-latest
       steps:
         - name: Checkout repo
@@ -73,8 +73,13 @@ jobs:
             --scripts "ps -eo pid,user,%cpu,%mem,command --sort=-%cpu | head -20" \
             --query "value[0].message" -o tsv > vm_process_info.txt
 
-        - name: Set Report Date
-          run: echo "REPORT_DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
+        - name: Set Report Date with IST 
+          run: |
+            export TZ="Asia/Kolkata"
+            echo "REPORT_DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
+
+        - name: Debug the Report Date
+          run: echo "Current Report Date: ${{ env.REPORT_DATE }}"
 
         - name: Combining the Disk & Running Process Reports
           run: |
