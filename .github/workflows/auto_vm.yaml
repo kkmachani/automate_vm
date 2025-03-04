@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  checking-running-process-of-VM-and-sending-an-email:
+  checking-running-processes-of-VM:
       name: Login to azure
       runs-on: ubuntu-latest
       steps:
