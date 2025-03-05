@@ -1,8 +1,8 @@
 name: Automate VM and Check the Disk Info
 
 on:
-  schedule:
-    - cron: '0 14 * * *'
+  # schedule:
+  #   - cron: '0 14 * * *'
   push:
     branches:
       - main
@@ -36,6 +36,7 @@ jobs:
         - name: Checking the VM
           run: |
            az vm show --name ${{ secrets.AZURE_VM_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --query "id" --output tsv && echo "VM exists" || echo "VM does not exist"
+
 
         - name: checking the Power-State of the VM
           run: |
