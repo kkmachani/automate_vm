@@ -49,7 +49,7 @@ jobs:
         
         - name: Checking the Nginx in VM
           run: |
-           az vm run-command invoke \
+           az vm run-command invoke \3
            --command-id RunShellScript \
            --name ${{ secrets.AZURE_VM_NAME }} \
            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
