@@ -9,7 +9,7 @@ on:
 
 jobs:
   checking-running-processes-of-VM:
-      name: checking-running-processes-of-VM
+      name: checking-running-processes-of-Vm
       runs-on: ubuntu-latest
       steps:
         - name: Checkout repo
